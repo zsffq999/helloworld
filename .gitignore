@@ -1,0 +1,13 @@
+bin/
+obj/
+out/
+Release*/
+Debug*/
+__pycache__/
+.idea/
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.pyc
+*.ipch
