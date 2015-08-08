@@ -3,14 +3,6 @@ import sys
 
 from interests import *
 
-def load(filename):
-	with open(filename, 'rb') as f:
-		return cp.load(f)
-
-def save(filename, obj):
-	with open(filename, 'wb') as f:
-		return cp.dump(obj, f)
-
 def exedate(fmtdate):
 	year = int(fmtdate[:4])
 	month = int(fmtdate[5:7])
@@ -47,17 +39,18 @@ def loadcsv(filename, interests_info):
 def csv2npy(src, dst_day, dst_min, interests_info, series=-1):
 	listdir = os.listdir(src)
 	listdir = sorted(listdir)
+	print(listdir)
 	for stk in listdir:
-		if stk[-5] == str(series) and stk == 'SH600031.npy':
-			print 'executing', stk, '...'
+		if stk[-5] == str(series) and stk == 'SH600031.csv':
+			print('executing', stk, '...')
 			stk_day, stk_min = loadcsv(os.path.join(src, stk), interests_info[stk[:-4]] if stk[:-4] in interests_info else {})
 			np.save(os.path.join(os.path.join(dst_day, stk[:-4]+'.npy')), stk_day)
 			np.save(os.path.join(os.path.join(dst_min, stk[:-4]+'.npy')), stk_min)
 
 if __name__ == '__main__':
-	series = sys.argv[1]
+	series = '1'#sys.argv[1]
 	#load interests information
-	interests_info = interestsinfo('wsSHSZ_SPLITs_' + series)
+	interests_info = interestsinfo('data/rights/wsSHSZ_SPLITs_' + series)
 	#execute
-	csv2npy('wstock/SH', 'processing_day', 'processing_min', interests_info, series)
-	csv2npy('wstock/SZ', 'processing_day', 'processing_min', interests_info, series)
+	csv2npy('data/wstock/SH', 'data/processing_day', 'data/processing_min', interests_info, series)
+	csv2npy('data/wstock/SZ', 'data/processing_day', 'data/processing_min', interests_info, series)

@@ -1,5 +1,4 @@
 import numpy as np
-import cPickle as cp
 
 def date2int(date):
 	return date[0] * 10000 + date[1] * 100 + date[2]

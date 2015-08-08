@@ -12,3 +12,5 @@ __pycache__/
 *.opensdf
 *.pyc
 *.ipch
+
+data

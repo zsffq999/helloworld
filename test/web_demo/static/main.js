@@ -6,7 +6,7 @@ var dt;
 
 function append_data() {
     $.ajax({
-        url: '/getdata/20100101',
+        url: '/getdata/' + moment().format("YYYYMMDD"),
         success: function (ret) {
             var obj = JSON.parse(ret);
             dt.row.add(obj).draw();
