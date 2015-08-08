@@ -1,6 +1,7 @@
 bin/
 obj/
 out/
+data/
 Release*/
 Debug*/
 __pycache__/
