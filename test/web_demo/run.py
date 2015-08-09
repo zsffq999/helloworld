@@ -9,7 +9,7 @@ os.chdir(os.path.dirname(abspath))
 
 # -------------------------------------------------------------
 # 创建flask
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from datetime import date, timedelta, datetime
 import json
 
@@ -38,6 +38,13 @@ def getdata(sid):
         return json.dumps([delta.days, d.isoweekday(), now_str])
     except:
         return json.dumps([None, -1, now_str])
+
+
+@app.route("/postdata", methods=["POST"])
+def postdata():
+    data = request.json
+    print(data)
+    return json.dumps(data)
 
 
 if __name__ == "__main__":

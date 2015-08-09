@@ -17,7 +17,7 @@ function append_data() {
 
 $(document).ready(function () {
 
-        // 初始化table
+        // 鍒濆鍖杢able
         dt = $("#tbl").DataTable({
             "columns": [
                 {"title": "Days since 0001-1-1"},
@@ -26,7 +26,21 @@ $(document).ready(function () {
             ]
         });
 
-        // 配置自动刷新数据的定时器
+        // 閰嶇疆鑷姩鍒锋柊鏁版嵁鐨勫畾鏃跺櫒
         setInterval(append_data, 1000);
+
+        $("#btn1").click(function () {
+            $("#msg2").html(JSON.stringify([1, 2, 3]));
+            $.ajax({
+                type: "POST",
+                url: "/postdata",
+                data: JSON.stringify([1, 2, 3]),
+                dataType: "json",
+                contentType: 'application/json',
+                success: function (ret) {
+                    $("#msg2").text(ret);
+                }
+            });
+        });
     }
 );
