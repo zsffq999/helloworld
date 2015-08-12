@@ -12,5 +12,4 @@ __pycache__/
 *.opensdf
 *.pyc
 *.ipch
-
-data
+!strategy/data/
