@@ -1,7 +1,10 @@
 import numpy as np
+from datetime import datetime
+
 
 def date2int(date):
 	return date[0] * 10000 + date[1] * 100 + date[2]
+
 
 def interestsinfo(filename):
 	info = {}
@@ -17,6 +20,7 @@ def interestsinfo(filename):
 			else:
 				info[context[0]] = {int(context[1]): [float(context[2]), float(context[3]), float(context[4]), float(context[5])]}
 	return info
+
 
 def rminterests(price, rights, ration, ration_price, interests):
 	res = (price - interests + ration*ration_price) / (1 + rights + ration)

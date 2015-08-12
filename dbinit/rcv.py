@@ -3,13 +3,15 @@ import sys
 
 from dbinit.interests import *
 
+
 def rcv_interests(price, rights, ration, ration_price, interests):
 	res = (price - interests + ration*ration_price) / (1 + rights + ration)
 	return res
 
+
 def rcv_interests_abv(stk_info, interests_info):
 	for k, v in sorted(interests_info.items()):
-		idx = np.searchsorted(stk_info['date'], k)
+		idx = np.searchsorted(stk_info['datetime'], datetime(k/10000, k/100%100, k%100))
 		rights, ration, ration_price, interests = v
 		stk_info['before'][:idx] = rcv_interests(stk_info['before'][:idx], rights, ration, ration_price, interests)
 		stk_info['open'][:idx] = rcv_interests(stk_info['open'][:idx], rights, ration, ration_price, interests)
@@ -21,6 +23,7 @@ def rcv_interests_abv(stk_info, interests_info):
 		stk_info[idx] = np.round(stk_info[idx]*100)/100.0
 	return stk_info
 
+
 def rcv_batch(src, dst, interests_info, filter):
 	listdir = os.listdir(src)
 	listdir = sorted(listdir)
@@ -30,6 +33,7 @@ def rcv_batch(src, dst, interests_info, filter):
 		if filter(stk):
 			print('executing', stk, '...')
 			np.save(os.path.join(dst, stk), rcv_interests_abv(data, interests_info[stk] if stk in interests_info else {}))
+
 
 if __name__ == "__main__":
 	series = sys.argv[1]
