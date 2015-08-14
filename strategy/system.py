@@ -23,9 +23,9 @@ class System(object):
 		self.dataset.update(newdata)
 		_signal = self.model.predict(self.dataset)
 		_deal = self.trader.trade(_signal, self.dataset) # _deal可能是None
-		return self.__sendDeal(_deal)
+		return self.sendDeal(_deal)
 
-	def __sendDeal(self, deal):
+	def sendDeal(self, deal):
 		"""
 		向交易所发送交易订单
 		:param trade: 交易信息
@@ -60,36 +60,5 @@ class System(object):
 		分析模拟交易结果
 		:return:
 		"""
-		return self.analysis.analyse(self.trader.getTradeInfo())
+		return self.analysis.analyse(self.getTradeInfo(), self.dataset)
 
-
-class TestSystem(System):
-	"""
-	模拟测试系统。
-	几个假设：
-	（1）数据（Market）被分为训练集和测试集
-	（2）交易总能成功，不存在撤单交易
-	split: 划分训练集及测试集函数
-	"""
-
-	def __init__(self, model, dataset, trader, analysis, split):
-		super(TestSystem, self).__init__(model, dataset, trader, analysis)
-		self.split = split
-
-	def run(self):
-		"""
-		运行system
-		:return:
-		"""
-		# 划分训练集及测试集
-		traindata, testdata = self.split(self.dataset)
-
-		# 训练模型
-		self.model.train()
-		for newdata in self.testdata:
-			traindata.updateData()
-			_signal = self.model.predict(traindata)
-			_deal = self.trader.trade(_signal, traindata) # _deal可能是None
-			self.receiveDeal(self.__sendDeal(_deal))
-
-		return self.analysisModel()

@@ -30,6 +30,9 @@ class DataSet(object):
 		"""
 		self.list[key] = value
 
+	def __len__(self):
+		return len(self.list)
+
 	def append(self, value):
 		"""
 		提供列表操作的接口
@@ -38,6 +41,12 @@ class DataSet(object):
 			self.list += value
 		else:
 			self.list.append(value)
+
+	def update(self, newdata):
+		"""
+		提供数据更新的接口
+		"""
+		pass
 
 	@property
 	def time(self):

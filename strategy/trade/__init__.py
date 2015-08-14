@@ -19,6 +19,7 @@ class Trade(object):
 		pass
 
 	def rcvtrade(self, trade):
+		print(*trade)
 		if isinstance(trade, list):
 			self.tradeinfo += trade
 		else:
@@ -44,3 +45,9 @@ class Deal(object):
 		self.target = target
 		self.amount = amount
 		self.price = price
+
+	def __str__(self):
+		return "Deal: <time: {0}, target: {1}, amount: {2}, price: {3}>".format(self.time, self.target, self.amount, self.price)
+
+if __name__ == "__main__":
+	print(*[Deal(1, 2, 3, 4), Deal(5,6,7,8)])

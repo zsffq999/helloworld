@@ -19,13 +19,15 @@ def loadcsv(filename, interests_info):
 	res_min = []
 	with open(filename, 'r') as f:
 		flag = True
+		_before = -1
 		for line in f:
 			if flag:
 				flag = False
 				continue
 			context = line.strip().split(',')
 			_datetime, _date, _time = exedate(context[0])
-			_before = float(context[1]) if len(res_day) == 0 else res_day[-1][6]
+			if _before < 0:
+				_before = float(context[1])
 			if _time == 0 or _time == 935:
 				if _date in interests_info:
 					_info = interests_info[_date]
@@ -35,6 +37,7 @@ def loadcsv(filename, interests_info):
 				res_day.append(data)
 			else:
 				res_min.append(data)
+			_before = float(context[4])
 	dtype = np.dtype([('datetime',datetime), ('before',np.float32), ('open',np.float32), ('low', np.float32), ('high',np.float32), ('close',np.float32), ('vol',np.int64), ('amt', np.int64)])
 	return np.array(res_day, dtype=dtype), np.array(res_min, dtype=dtype)
 
@@ -44,7 +47,7 @@ def csv2npy(src, dst_day, dst_min, interests_info, filter):
 	listdir = sorted(listdir)
 	print(listdir)
 	for stk in listdir:
-		if filter:
+		if filter(stk[:-4]):
 			print('executing', stk, '...')
 			stk_day, stk_min = loadcsv(os.path.join(src, stk), interests_info[stk[:-4]] if stk[:-4] in interests_info else {})
 			np.save(os.path.join(os.path.join(dst_day, stk[:-4]+'.npy')), stk_day)

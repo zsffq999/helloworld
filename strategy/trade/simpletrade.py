@@ -14,6 +14,7 @@ class SimpleTrade(Trade):
 		self.status = 0
 
 	def trade(self, signal, dataset):
-		amount = signal - self.status
-		self.status = signal
-		return [Deal(dataset.time, dataset.target, amount, dataset.price)]
+		if signal != self.status:
+			amount = signal - self.status
+			self.status = signal
+			return [Deal(dataset.time, dataset.target, amount, dataset.price)]
