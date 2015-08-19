@@ -59,6 +59,6 @@ if __name__ == '__main__':
 	#load interests information
 	interests_info = interestsinfo('../data/rights/wsSHSZ_SPLITs_' + series)
 	#execute
-	filter = lambda x: x[-1] == '1'
+	filter = lambda x: x[-1] == '0'
 	csv2npy('../data/wstock/SH', '../data/processing_day', '../data/processing_min', interests_info, filter)
 	csv2npy('../data/wstock/SZ', '../data/processing_day', '../data/processing_min', interests_info, filter)

@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 
 
 def main():
-	model = MacdModel()
-	dataset = KLine('SH000001', 240, '../data')
+	model = SimpleMacdModel()
+	dataset = KLine('SH000300', 5, '../data')
 	print(dataset.target)
 	analysis = YieldAnalysis()
 	trade = SimpleTrade()
@@ -26,8 +26,12 @@ def main():
 
 	dates, yields= system.run(NoTrainSplit())
 
+	print(sum([y for y in yields if y < 0]))
+	print(sum([y for y in yields if y > 0]))
+
 	plt.plot(dates, yields)
 	plt.show()
+
 
 if __name__ == "__main__":
 	main()

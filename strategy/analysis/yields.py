@@ -8,25 +8,59 @@ import numpy as np
 
 class YieldAnalysis(Analysis):
 	"""
-	按天计算以3个月为单位的年化收益率
+	按天计算收益率
 	"""
 
 	def analyse(self, trades, dataset):
 		trades = sorted(trades, key=lambda x: x.time)
-		id = np.searchsorted(dataset['datetime'], trades[0].time)
-		own = 0
-		trid = 0
 
 		dates = []
 		yields = []
 
+		# 在交易的节点算账户余额
+		# 开仓资金
+		_money = -trades[0].amount * trades[0].price
+		_begin = abs(_money)
+		_own = trades[0].amount
+		_date = trades[0].time.date()
+		_date = datetime(_date.year, _date.month, _date.day, 23, 59, 59)
+		_negmoney, _posmoney = 0, 0
+		f = open('deal.csv', 'w')
+		f2 = open('money.csv', 'w')
+		print(trades[0].time, trades[0].amount, trades[0].price, sep=',', file=f)
+		for trade in trades[1:]:
+			# 如果收盘，结算当天收益（假设按照收盘价结算，而不是收盘最后若干分钟平均价结算）
+			while _date < trade.time:
+				_close = dataset.closeprice(_date)
+				_end = _money + _own * _close
+				dates.append(_date)
+				if _end > 0:
+					_negmoney += _end
+				else:
+					_posmoney += _end
+				_yield = _end / _begin
+				yields.append(_yield)
+				print(_date, _own, _begin, _close, _end, _yield)
+				print(_date, _own, _begin, _close, _end, _yield, sep=',', file=f2)
+				_money = -_own * _close
+				_begin = abs(_money)
+				_date = _date + timedelta(1)
+			_money -= trade.amount * trade.price
+			_own += trade.amount
+			print(trade.time, trade.amount, trade.price, sep=',', file=f)
+
+		print(_posmoney, _negmoney)
+		f.close()
+		f2.close()
+
+		'''
 		for d in dataset[id:]:
 			_from = d[0]
-			_to = d[0] + timedelta(360)
+			#_to = d[0] + timedelta(360)
 			fid = np.searchsorted(dataset['datetime'], _from)
-			tid = np.searchsorted(dataset['datetime'], _to, side='right')
-			if tid >= len(dataset):
-				break
+			#tid = np.searchsorted(dataset['datetime'], _to, side='right')
+			#if tid >= len(dataset):
+			#	break
 
 			#计算初始拥有量
 			if trades[trid].time <= _from:
@@ -54,5 +88,6 @@ class YieldAnalysis(Analysis):
 
 			dates.append(_from)
 			yields.append(_yield)
+		'''
 
 		return dates, yields

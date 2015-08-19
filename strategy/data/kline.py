@@ -1,9 +1,10 @@
 # -*- coding=utf-8 -*-
 
 
-from strategy.data import DataSet, datetime
+from strategy.data import DataSet
 import numpy as np
 import os
+from datetime import datetime
 
 
 class KLine(DataSet):
@@ -37,3 +38,9 @@ class KLine(DataSet):
 	@property
 	def price(self):
 		return self.list[-1][5]
+
+	def closeprice(self, date):
+		_date = datetime(date.year, date.month, date.day, 23, 59, 59)
+		_id = np.searchsorted(self.list['datetime'], _date, side='right')-1
+		return self.list[_id]['close']
+
