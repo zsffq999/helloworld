@@ -55,10 +55,10 @@ def csv2npy(src, dst_day, dst_min, interests_info, filter):
 
 
 if __name__ == '__main__':
-	series = '1'#sys.argv[1]
-	#load interests information
+	series = '1' # sys.argv[1]
+	# load interests information
 	interests_info = interestsinfo('../data/rights/wsSHSZ_SPLITs_' + series)
-	#execute
-	filter = lambda x: x[-1] == '0'
+	# execute
+	filter = lambda x: x[-1] == '1'
 	csv2npy('../data/wstock/SH', '../data/processing_day', '../data/processing_min', interests_info, filter)
 	csv2npy('../data/wstock/SZ', '../data/processing_day', '../data/processing_min', interests_info, filter)

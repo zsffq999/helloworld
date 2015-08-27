@@ -3,7 +3,7 @@ from strategy.model.labelconstructor import LabelConstructor
 import numpy as np
 from sklearn import preprocessing
 from datetime import timedelta
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
 
 class KDJ(object):
 
@@ -36,12 +36,12 @@ class KDJ(object):
 			j = 3*k - 2*d
 			res.append([k,d,j])
 
-		#更新内存前若干日最大最小值及KDJ信息，假设len(ls)>9
+		# 更新内存前若干日最大最小值及KDJ信息，假设len(ls)>9
 		self.datab4n[max(self.n-len(ls), 0):,:] = [[d['low'], d['high']] for d in ls[-self.n:]]
 		if self.n > len(ls):
 			self.datab4n[:self.n-len(ls),:] = self.datab4n[self.n-len(ls),:]
 		self.old_k, self.old_d, self.old_j = k, d, j
-		self.old_k, self.old_d, self.old_j = self.old_k_2, self.old_d_2, self.old_j_2
+		self.old_k_2, self.old_d_2, self.old_j_2 = self.old_k, self.old_d, self.old_j
 		return np.array(res)
 
 	def current(self, data, update=False):
@@ -99,7 +99,7 @@ class KDJModel(Model):
 		#	print(d, X_train_minmax[i], Y_train[i])
 
 		# 用SVM拟合数据
-		self.svm = LinearSVC()
+		self.svm = SVC()
 		self.svm.fit(X_train, Y_train)
 
 		print("Linear SVM Model:", self.svm)
@@ -109,5 +109,5 @@ class KDJModel(Model):
 	def predict(self, dataset):
 		k, d, j = self.KDJ.current(dataset[-1], True)
 		y = self.svm.predict(self.min_max_scaler.transform([k,d,j]))[0]
-		print(dataset[-1], self.min_max_scaler.transform([k,d,j]), y)
+		print(dataset[-1], [k,d,j], y)
 		return y

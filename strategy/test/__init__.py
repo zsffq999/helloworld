@@ -11,9 +11,8 @@ class TestSystem(System):
 	split: 划分训练集及测试集函数
 	"""
 
-	def __init__(self, model, dataset, trader, analysis, updatecycle):
+	def __init__(self, model, dataset, trader, analysis):
 		super(TestSystem, self).__init__(model, dataset, trader, analysis)
-		self.updatecycle = updatecycle
 
 	def run(self, traintestsplit):
 		"""
@@ -34,9 +33,8 @@ class TestSystem(System):
 			if _deal:
 				self.receiveDeal(self.sendDeal(_deal))
 			# 更新模型
-			if traintestsplit.traindata.time - self.updatecycle >= recent_update_time:
+			if traintestsplit.trainNewModel():
 				print(traintestsplit.traindata.time, ": Updating model")
-				recent_update_time += self.updatecycle
 				self.model.train(traintestsplit.traindata)
 
 		return self.analysis.analyse(self.trader.tradeinfo, traintestsplit.traindata)
