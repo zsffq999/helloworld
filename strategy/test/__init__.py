@@ -1,4 +1,5 @@
 from strategy.system import System
+from datetime import timedelta
 
 
 class TestSystem(System):
@@ -10,8 +11,9 @@ class TestSystem(System):
 	split: 划分训练集及测试集函数
 	"""
 
-	def __init__(self, model, dataset, trader, analysis):
+	def __init__(self, model, dataset, trader, analysis, updatecycle):
 		super(TestSystem, self).__init__(model, dataset, trader, analysis)
+		self.updatecycle = updatecycle
 
 	def run(self, traintestsplit):
 		"""
@@ -21,6 +23,7 @@ class TestSystem(System):
 		"""
 		# 划分训练集及测试集
 		traintestsplit.split(self.dataset)
+		recent_update_time = traintestsplit.traindata.time
 
 		# 训练模型
 		self.model.train(traintestsplit.traindata)
@@ -30,55 +33,10 @@ class TestSystem(System):
 			_deal = self.trader.trade(_signal, traintestsplit.traindata) # _deal可能是None
 			if _deal:
 				self.receiveDeal(self.sendDeal(_deal))
+			# 更新模型
+			if traintestsplit.traindata.time - self.updatecycle >= recent_update_time:
+				print(traintestsplit.traindata.time, ": Updating model")
+				recent_update_time += self.updatecycle
+				self.model.train(traintestsplit.traindata)
 
 		return self.analysis.analyse(self.trader.tradeinfo, traintestsplit.traindata)
-
-class TrainTestSplit:
-	"""
-	训练集和测试集分割类
-	"""
-
-	def __init__(self):
-		self.dataset = None
-		self.traindata = None
-		self.testdata = None
-
-	def split(self, dataset):
-		"""
-		划分训练集和测试集
-		:param dataset:
-		:return:
-		"""
-		self.dataset = dataset
-
-	def hasNextTest(self):
-		"""
-		根据训练集和测试集划分情况，迭代下一个测试集
-		:return: bool
-		"""
-		pass
-
-	def updateTrain(self):
-		"""
-		更新训练集
-		:return:
-		"""
-		pass
-
-class NoTrainSplit(TrainTestSplit):
-
-	def __init__(self):
-		super(NoTrainSplit, self).__init__()
-
-	def split(self, dataset):
-		super(NoTrainSplit, self).split(dataset[1000:])
-		self.traindata = self.dataset[:0]
-		self.testdata = self.dataset
-		self.testid = 0
-
-	def hasNextTest(self):
-		return self.testid < len(self.dataset)
-
-	def updateTrain(self):
-		self.testid += 1
-		self.traindata = self.dataset[:self.testid]

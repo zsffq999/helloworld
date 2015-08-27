@@ -24,7 +24,6 @@ class YieldAnalysis(Analysis):
 		_own = trades[0].amount
 		_date = trades[0].time.date()
 		_date = datetime(_date.year, _date.month, _date.day, 23, 59, 59)
-		_negmoney, _posmoney = 0, 0
 		f = open('deal.csv', 'w')
 		f2 = open('money.csv', 'w')
 		print(trades[0].time, trades[0].amount, trades[0].price, sep=',', file=f)
@@ -34,10 +33,6 @@ class YieldAnalysis(Analysis):
 				_close = dataset.closeprice(_date)
 				_end = _money + _own * _close
 				dates.append(_date)
-				if _end > 0:
-					_negmoney += _end
-				else:
-					_posmoney += _end
 				_yield = _end / _begin
 				yields.append(_yield)
 				print(_date, _own, _begin, _close, _end, _yield)
@@ -49,7 +44,17 @@ class YieldAnalysis(Analysis):
 			_own += trade.amount
 			print(trade.time, trade.amount, trade.price, sep=',', file=f)
 
-		print(_posmoney, _negmoney)
+		while _date < dataset.time +timedelta(1):
+			_close = dataset.closeprice(_date)
+			_end = _money + _own * _close
+			dates.append(_date)
+			_yield = _end / _begin
+			yields.append(_yield)
+			print(_date, _own, _begin, _close, _end, _yield)
+			print(_date, _own, _begin, _close, _end, _yield, sep=',', file=f2)
+			_money = -_own * _close
+			_begin = abs(_money)
+			_date = _date + timedelta(1)
 		f.close()
 		f2.close()
 
